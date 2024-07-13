@@ -1,109 +1,636 @@
-<html>
-<style>
-body {
-   font-family: Arial, sans-serif;
-   margin: 0;
-   padding: 0;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   height: 100vh;
-   background-color: #222;
-   color: #fff;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"
+    integrity="sha512-5VtFABdNuhZmBvEq4d/4Hb2p04ovR8i8MQD9D0bgNDm3IdnAwBzRRu5iNedCjE6/zSbS4T4p3T2iU83KxV3I0Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-header {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   padding: 20px;
-   background-color: #fff;
-   color: #222;
-   border-radius: 20px;
-   box-shadow: 0 0 10px #000;
-}
 
-h1 {
-   font-size: 3em;
-      text-align: center;
-      color: #f80;
-   }
 
-   form {
+  <title>Last40 Store</title>
+  <style>
+    
+    .product {
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .product:hover {
+      transform: scale(1.05);
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8); /* White overlay color with some transparency */
+      opacity: 0;
       display: flex;
-      justify-content: center;
       align-items: center;
-      margin: 20px 0;
-   }
+      justify-content: center;
+      transition: opacity 0.3s ease-in-out;
+    }
 
-   input[type="text"] {
-      padding: 10px;
-      border: none;
-      border-radius: 20px;
-      font-size: 1em;
-   }
 
-   nav ul {
-      display: flex;
-      list-style: none;
-      padding: 0;
-   }
+    .product:hover .overlay {
+      opacity: 1;
+    }
 
-   nav ul li {
-      margin: 0 10px;
-   }
-   nav ul li a {
-      color: #f80;
+    .overlay a {
       text-decoration: none;
-      font-size: 1.2em;
-   }
+      background-color: #7fba00;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      display: inline-block;
+      transition: background-color 0.3s ease-in-out;
+    }
 
-   main {
-      margin: 20px 0;
+    .overlay a:hover {
+      background-color: #5b8c00;
+    }
+
+    .product-details {
+      position: relative;
+      z-index: 1;
+    }
+
+    .product-card {
+      background-color: rgba(127, 186, 0, 0.7);
+      background-image: url('https://images.unsplash.com/photo-1490885578174-acda8905c2c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80');
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: overlay;
+      width: 100%;
+      aspect-ratio: 5/6;
+      border-radius: 10px;
       padding: 20px;
-      background-color: #fafafa;
-      border-radius: 20px;
-      box-shadow: 0 0 10px #000;
-   }
-
-   footer {
+      color: white;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      padding: 20px;
-      background-color: #f00;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(127, 186, 0, 0.7);
+      border-radius: 10px;
+      z-index: 1;
+    }
+
+    .icon-row,
+    .rating,
+    .product-name,
+    .price {
+      position: relative;
+      z-index: 2;
+    }
+
+    .icon-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .icon {
+      background-color: white;
+      color: #7fba00;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .rating {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .product-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+
+    .price {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 1024px) {
+      .product-card {
+        aspect-ratio: 4/5;
+      }
+
+      .icon {
+        width: 25px;
+        height: 25px;
+        font-size: 14px;
+      }
+
+      .rating {
+        font-size: 20px;
+      }
+
+      .product-name {
+        font-size: 18px;
+      }
+
+      .price {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .product-card {
+        aspect-ratio: 1;
+      }
+    }
+    .card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* Adjust image width based on screen size */
+    .card img {
+      width: 100%; /* Default width */
+      height: 200px; /* Adjust height as needed */
+      object-fit: cover;
+      border-radius: 10px; /* Match card border-radius */
+      margin-bottom: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .card img {
+        width: 75%;
+      }
+    }
+
+    .card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .card a {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background-color: #007bff;
       color: #fff;
-      border-radius: 20px;
-      box-shadow: 0 0 10px #000;
-   }
-   </style>
-   <body>
-      <header>
-          <h1 style="display:flex"><img src="https://img.freepik.com/free-vector/vegetables-shopping-realistic-concept-with-shopping-cart-goods-vector-illustration_1284-16246.jpg"style="height:50px;width:50px;"/>FreshCart</h1>
-          <form>
-              <input type="text" placeholder="Search for Items...">
-          </form>
-          <nav>
-              <ul>
-                  <li><a href="#">Home</a></li>
-                  <li><a href="#">Categories</a></li>
-                  <li><a href="#">Products</a></li>
-                  <li><a href="#">Pages</a></li>
-                  <li><a href="#">Blogs</a></li>
-                  <li><a href="#">Elements</a></li>
-                  <li><a href="#">Contact</a></li>
-              </ul>
-          </nav>
-      </header>
-      <main>
-          <!-- Content goes here -->
-      </main>
-      <footer>
-         <p>Mobile Number: 123-456-7890</p>
-                <ul>
-                    <li><a href="#">Account</a></li>
-                    <li><a href="#">Wishlist</a></li>
-                    <li><a href="#">Cart</a></li>
-                </ul>
-            </footer>
-         </body>
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .card a:hover {
+      background-color: #0062cc;
+    }
+
+    /* Responsiveness (Adjust breakpoints and styles as needed) */
+    @media (min-width: 768px) {
+      .card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .grid.grid-cols-1,
+      .grid.grid-cols-3 {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+      }
+    }
+      /* Responsiveness (Adjust breakpoints and styles as needed) */
+      @media (min-width: 768px) {
+
+      }
+
+      .bg-img {
+        background-image: url('https://img.freepik.com/free-photo/white-simple-textured-design-background_53876-106174.jpg?size=626&ext=jpg&ga=GA1.1.1594284935.1720523048&semt=ais_hybrid');
+        background-size: cover;
+        background-position: center;
+        height: 100vh; /* Set the height of the container to full viewport height */
+        display: flex;
+        justify-content: flex-end; /* Align content to the right */
+        align-items: center; /* Center vertically */
+      }
+
+
+      @media (max-width: 992px) {
+          .cart-icon, .search-icon, .icon {
+              font-size: 16px;
+          }
+      }
+
+      @media (max-width: 768px) {
+          .cart-icon, .search-icon, .icon {
+              font-size: 14px;
+          }
+      }
+
+      @media (max-width: 576px) {
+          .cart-icon, .search-icon, .icon {
+              font-size: 12px;
+          }
+      }
+    .logo {
+        height: 10rem; /* Default size */
+    }
+
+    @media (max-width: 1200px) {
+        .logo {
+            height: 8rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .logo {
+            height: 6rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .logo {
+            height: 4rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .logo {
+            height: 3rem;
+        }
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <!-- Header -->
+  <header class="bg-white shadow-md">
+    <div class="container mx-auto flex justify-between items-center p-4">
+      <div class="logo">
+        <img src="https://img.freepik.com/premium-vector/organic-food-logo-template-design_316488-336.jpg" alt="Logo" class="logo">
+      </div>
+      <nav class="hidden md:flex space-x-4"  style="font-weight:bold;">
+        <a href="#" class="text-gray-700 ">Home</a>
+        <a href="#" class="text-gray-700">Shop</a>
+        <a href="#" class="text-gray-700">Blog</a>
+        <a href="#" class="text-gray-700">Contact Us</a>
+      </nav>
+      <div class="icons flex space-x-4">
+         <a href="#"><i class="fa fa-search search-icon"></i></a>
+        <a href="#"><i class="fa fa-shopping-cart cart-icon"></i></a>
+         <a href="#"><i class="fa fa-user icon"></i></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="bg-img py-16">
+    <div class="container mx-auto flex flex-col md:flex-row items-center">
+      <div class="md:w-1/2 px-4 sm:px-6 lg:px-8 md:order-2"> <!-- Adjusted padding and order for mobile -->
+        <h1 class="text-4xl font-bold mb-4">Fresh Organic From The Farm</h1>
+        <p class="text-gray-700 mb-6">Enjoy the best quality fresh produce directly from the farm to your table. Experience the difference with our organic products.</p>
+        <a href="#" class="bg-green-500 text-white px-4 py-2 rounded inline-block">Shop Now</a>
+      </div>
+      <div class="md:w-1/2 md:order-1 flex justify-center items-center"> <!-- Center aligning and order for mobile -->
+        <img src="https://images.unsplash.com/photo-1548808918-a33260f83b25?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygjlMjBmb29kfGVufDB8fDB8fHww" alt="Fresh Produce" class="w-full md:max-w-full h-auto max-h-64 object-cover"> <!-- Adjusted image class -->
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <!-- Product Categories -->
+
+  <section class="container mx-auto mt-16">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1592918489661-b098eb4e343c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygjlc2glMjBmcnVpdHN8ZW58MHx8MHx8fDA%3D" alt="Product 1">
+        <h2 style="font-weight:bold;">Fresh Fruits</h2>
+        <p>Delicious and nutritious fruits straight from the farm to your table.</p>
+        <a href="#" style="background-color: #10B981;">Shop Fruits</a>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1590685006710-2b478c69b26b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODZ8fGZyZXNoJTIwdmVnZXRhYmxlc3xlbnwwfHwwfHx8MA%3D%3D" alt="Product 2">
+        <h2 style="font-weight:bold;">Purely Organic</h2>
+        <p>Explore our selection of purely organic products, sustainably grown for your well-being.</p>
+        <a href="#" style="background-color: #10B981;">Shop Organic</a>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1517260739337-6799d239ce83?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygjlc2glMjBmcnVpdHN8ZW58MHx8MHx8fDA%3D" alt="Product 3">
+        <h2 style="font-weight:bold;">Fresh Vegetables</h2>
+        <p>Discover the freshness of our hand-picked vegetables, ready to enhance your recipes.</p>
+        <a href="#" style="background-color: #10B981;">Shop Vegetables</a>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+
+
+  <!-- Featured Products -->
+  <section class="bg-gray-100 py-16"  style="background-image: url('https://img.freepik.com/free-photo/white-simple-textured-design-background_15851597.htm'); background-size: cover; background-position: center;">>
+    <div class="container mx-auto px-4">
+      <h2 class="text-2xl font-bold mb-8 text-center">Best Selling Products</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <!-- Product 1 -->
+        <div class="product bg-white rounded-lg shadow-md overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1630563451961-ac2ff27616ab?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygjlfGVufDB8fDB8fHww" alt="Product Image" class="w-full h-64 object-cover">
+          <div class="overlay">
+            <a href="#" class="shop-now">Shop Now</a>
+          </div>
+          <div class="product-details">
+            <div class="p-4">
+              <h3 class="text-lg font-semibold mb-2">Organic Apples</h3>
+              <p class="text-gray-700 mb-2">$10.00</p>
+              <div class="flex justify-center mb-2">
+                <!-- Star rating -->
+                <span class="text-yellow-400">&#9733;</span>
+                <span class="text-yellow-400">&#9733;</span>
+                <span class="text-yellow-400">&#9733;</span>
+                <span class="text-yellow-400">&#9733;</span>
+                <span class="text-yellow-400">&#9734;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Product 2 -->
+        <div class="product bg-white rounded-lg shadow-md overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1639427444459-85a1b6ac2d68?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygj%3D" alt="Product Image" class="w-full h-64 object-cover">
+          <div class="overlay">
+            <a href="#" class="shop-now">Shop Now</a>
+          </div>
+          <div class="product-details">
+            <div class="p-4">
+              <h3 class="text-lg font-semibold mb-2">Organic Carrots</h3>
+              <p class="text-gray-700 mb-2">$5.00</p>
+              <div class="flex justify-center mb-2">
+                <!-- Star rating -->
+                <span class="text-yellow-400">&#9733;</span>
+                <span class="text-yellow-400">&#9733;</span>
+                <span class="text-yellow-400">&#9733;</span>
+                <span class="text-yellow-400">&#9734;</span>
+                <span class="text-yellow-400">&#9734;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Product 3 -->
+        <div class="product bg-white rounded-lg shadow-md overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1534620808146-d33bb39128b2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygjlYWR8ZW58MHx8MHx8fDA%3D" alt="Product Image" class="w-full h-64 object-cover">
+          <div class="overlay">
+            <a href="#" class="shop-now">Shop Now</a>
+          </div>
+          <div class="product-details">
+            <div class="p-4">
+              <h3 class="text-lg font-semibold mb-2">Organic Bread</h3>
+              <p class="text-gray-700 mb-2">$8.00</p>
+              <div class="flex justify-center mb-2">
+                <!-- Star rating -->
+                <span class="text-yellow-400">&#9733;</span>
+                <span class="text-yellow-400">&#9733;</span>
+                <span class="text-yellow-400">&#9734;</span>
+                <span class="text-yellow-400">&#9734;</span>
+                <span class="text-yellow-400">&#9734;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+  <!-- Deals of the Day -->
+  <section class="py-16">
+    <div class="container mx-auto text-center px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold mb-4">Deals of the Day</h2>
+      <p class="text-gray-700 mb-6">Special offers on our best products. Don't miss out!</p>
+
+      <div class="flex flex-wrap justify-center mb-6">
+        <!-- Product 1 -->
+        <div class="flex flex-col items-center max-w-xs m-4 bg-white rounded-lg shadow-lg p-4">
+          <img src="https://plus.unsplash.com/premium_photo-1667051230160-5906f5683a59?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygj%3D" alt="Deal Product" class="w-full h-48 object-cover mb-4 rounded-lg">
+          <div>
+            <h3 class="text-xl font-semibold mb-2">Fresh Red Apple</h3>
+            <div class="text-4xl font-bold text-green-500 mb-2">-50%</div>
+            <p class="text-gray-700">$10.00</p>
+            <a href="#" class="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="flex flex-col items-center max-w-xs m-4 bg-white rounded-lg shadow-lg p-4">
+          <img src="https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygjluZWFwcGxlfGVufDB8fDB8fHww" alt="Deal Product" class="w-full h-48 object-cover mb-4 rounded-lg">
+          <div>
+            <h3 class="text-xl font-semibold mb-2">Organic Pineapple Bunch</h3>
+            <div class="text-4xl font-bold text-green-500 mb-2">-30%</div>
+            <p class="text-gray-700">$7.00</p>
+            <a href="#" class="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="flex flex-col items-center max-w-xs m-4 bg-white rounded-lg shadow-lg p-4">
+          <img src="https://plus.unsplash.com/premium_photo-1663855531381-f9c100b3c48f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygj0ZXJtZWxvbnxlbnwwfHwwfHx8MA%3D%3D" alt="Deal Product" class="w-full h-48 object-cover mb-4 rounded-lg">
+          <div>
+            <h3 class="text-xl font-semibold mb-2">Juicy Watermelon Slice</h3>
+            <div class="text-4xl font-bold text-green-500 mb-2">-20%</div>
+            <p class="text-gray-700">$12.00</p>
+            <a href="#" class="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Shop Now</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-center sm:justify-center space-x-4 sm:space-x-6 mt-6">
+        <!-- Countdown timer -->
+        <div class="bg-white p-2 sm:p-4 rounded shadow-md w-16 sm:w-20 flex-shrink-0">
+          <p class="text-sm sm:text-lg font-bold">45</p>
+          <p class="text-gray-700 text-xs sm:text-sm">Days</p>
+        </div>
+        <div class="bg-white p-2 sm:p-4 rounded shadow-md w-16 sm:w-20 flex-shrink-0">
+          <p class="text-sm sm:text-lg font-bold">15</p>
+          <p class="text-gray-700 text-xs sm:text-sm">Hours</p>
+        </div>
+        <div class="bg-white p-2 sm:p-4 rounded shadow-md w-16 sm:w-20 flex-shrink-0">
+          <p class="text-sm sm:text-lg font-bold">33</p>
+          <p class="text-gray-700 text-xs sm:text-sm">Minutes</p>
+        </div>
+        <div class="bg-white p-2 sm:p-4 rounded shadow-md w-16 sm:w-20 flex-shrink-0">
+          <p class="text-sm sm:text-lg font-bold">49</p>
+          <p class="text-gray-700 text-xs sm:text-sm">Seconds</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Services Section -->
+  <section class="bg-gray-800 py-16 text-white">
+    <div class="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 text-center">
+      <div class="flex flex-col items-center">
+        <img src="https://plus.unsplash.com/premium_photo-1683147647528-5baca682d202?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygjMHx8MHx8fDA%3D" alt="Service 1" class="mx-auto mb-4">
+        <h3 class="text-xl font-semibold mb-2">Free Shipping Worldwide</h3>
+        <p class="text-gray-300">Enjoy free shipping on all orders worldwide.</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <img src="https://images.unsplash.com/photo-1534951009808-766178b47a4f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygjIwYmFjayUyMGltYWdlc3xlbnwwfHwwfHx8MA%3D%3D" alt="Service 2" class="mx-auto mb-4">
+        <h3 class="text-xl font-semibold mb-2">30 Days Return Guarantee</h3>
+        <p class="text-gray-300">Return any item within 30 days for a full refund.</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <img src="https://media.istockphoto.com/id/2150522257/photo/businessman-holding-and-showing-the-best-quality-assurance-with-five-stars-iso-certification.webp?b=1&s=170667a&w=0&k=20&c=CxFKTmHocxSkTbTWRtDNHAyQx8j9CfZB8_E41dtAHGg=" alt="Service 3" class="mx-auto mb-4">
+        <h3 class="text-xl font-semibold mb-2">100% Premium Quality</h3>
+        <p class="text-gray-300">All products are made with the highest quality materials.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Product Listing -->
+  <section class="py-16">
+    <div class="container mx-auto">
+      <h2 class="text-2xl font-bold mb-8 text-center">Product Listing</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
+        <!-- Product 1 -->
+        <div class="relative group">
+          <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1627764611688-2d07255e995e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygjWMlMjB0ZWF8ZW58MHx8MHx8fDA%3D" alt="Product Image" class="w-full h-64 object-cover transition duration-300 transform group-hover:scale-105">
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black bg-opacity-50 text-white text-center">
+            <div>
+              <h3 class="text-lg font-semibold">Organic Powdered Tea</h3>
+              <p class="text-gray-300">$15.99</p>
+              <div class="flex justify-center mt-2 text-yellow-400">
+                &#9733;&#9733;&#9733;&#9733;&#9733;
+              </div>
+              <a href="#" class="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Shop Now</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="relative group">
+          <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1587734195342-39d4b9b2ff05?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygjlJTIwYmVhbnN8ZW58MHx8MHx8fDA%3D" alt="Product Image" class="w-full h-64 object-cover transition duration-300 transform group-hover:scale-105">
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black bg-opacity-50 text-white text-center">
+            <div>
+              <h3 class="text-lg font-semibold">Premium Coffee Beans</h3>
+              <p class="text-gray-300">$29.99</p>
+              <div class="flex justify-center mt-2 text-yellow-400">
+                &#9733;&#9733;&#9733;&#9733;&#9734;
+              </div>
+              <a href="#" class="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Shop Now</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="relative group">
+          <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <img src="https://plus.unsplash.com/premium_photo-1664392163836-0129faa6d5f6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M1BQZKqdp2CV3QV5nUEsqSg1ygegLmqRygj0JTIwc2VlZHMlMjBpbiUyMGN1cHxlbnwwfHwwfHx8MA%3D%3D" class="w-full h-64 object-cover transition duration-300 transform group-hover:scale-105">
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black bg-opacity-50 text-white text-center">
+            <div>
+              <h3 class="text-lg font-semibold">Organically Grown Grains</h3>
+              <p class="text-gray-300">$99.99</p>
+              <div class="flex justify-center mt-2 text-yellow-400">
+                &#9733;&#9733;&#9733;&#9733;&#9733;
+              </div>
+              <a href="#" class="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Shop Now</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Newsletter Subscription -->
+  <section class="bg-gray-100 py-16">
+    <div class="container mx-auto text-center">
+      <h2 class="text-2xl font-bold mb-4">Subscribe to our Newsletter</h2>
+      <p class="text-gray-700 mb-6">Get the latest updates on new products and upcoming sales</p>
+      <form class="flex justify-center">
+        <input type="email" placeholder="Enter your email" class="p-2 border border-gray-300 rounded-l-md">
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-r-md">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Information</h3>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-300">About Us</a></li>
+          <li><a href="#" class="text-gray-300">Contact Us</a></li>
+          <li><a href="#" class="text-gray-300">Store Locations</a></li>
+          <li><a href="#" class="text-gray-300">FAQs</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold mb-4">My Account</h3>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-300">Order History</a></li>
+          <li><a href="#" class="text-gray-300">Wish List</a></li>
+          <li><a href="#" class="text-gray-300">Newsletter</a></li>
+          <li><a href="#" class="text-gray-300">Specials</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Popular Tags</h3>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-300">Organic</a></li>
+          <li><a href="#" class="text-gray-300">Fresh</a></li>
+          <li><a href="#" class="text-gray-300">Fruits</a></li>
+          <li><a href="#" class="text-gray-300">Vegetables</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="text-center mt-8 text-gray-400">
+      &copy; 2023 Nandy's Store. All rights reserved.
+    </div>
+  </footer>
+
+</body>
+</html>
